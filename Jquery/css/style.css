@@ -1,0 +1,13 @@
+svg {
+margin-left: 450px;
+margin-top: -400px;
+background-color:white;
+}
+
+.axis path,
+.axis line {
+
+	fill:none;
+	stroke: #000;
+	shape-rendering:crishpEdges;
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Purchasing Power of G20 countries in 2013</title>
+<link href="css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div>
+    <center><h1> Purchasing Power of G20 countries in 2013 </h1><center>
+  </div>
+
+  <div id="TableArea">
+   </div>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+      <script type="text/javascript">
+          $("#TableArea").html("");
+
+           //Create table html tag
+           var table = $("<table id=DynamicTable border=1></table>").appendTo("#TableArea");
+
+           //Create table header row
+           var rowHeader = $("<tr></tr>").appendTo(table);
+           $("<td></td>").text("S.No").appendTo(rowHeader);
+           $("<td></td>").text("Country").appendTo(rowHeader);
+           $("<td></td").text("Purchasing Power").appendTo(rowHeader);
+           $("<td></td").text("Delete").appendTo(rowHeader);
+
+
+           var purchasingPowerObj=[{"country": "Argentina","PurchasingPower2013": "931.3"},
+                                   {"country": "Australia","PurchasingPower2013": "1053.23"},
+                                   {"country": "Brazil","PurchasingPower2013": "3218.2"},
+                                   {"country": "Canada","PurchasingPower2013": "1532.79"},
+                                   {"country": "China","PurchasingPower2013": "16585"},
+                                   {"country": "France","PurchasingPower2013": "25544.72"},
+                                   {"country": "Germany","PurchasingPower2013": "3630.15"},
+                                   {"country": "India","PurchasingPower2013": "6796.13"},
+                                   {"country": "Indonesia","PurchasingPower2013": "2516.06"},
+                                   {"country": "Italy","PurchasingPower2013": "2109.84"},
+                                   {"country": "Japan","PurchasingPower2013": "4694.85"},
+                                   {"country": "Mexico","PurchasingPower2013": "2069.84"},
+                                   {"country": "Russia","PurchasingPower2013": "3498.04"},
+                                   {"country": "Saudi Arabia","PurchasingPower2013": "1530.54"},
+                                   {"country": "South Africa","PurchasingPower2013": "685.22"},
+                                   {"country": "Republic of Korea","PurchasingPower2013": "1698.88"},
+                                   {"country": "Turkey","PurchasingPower2013": "1448.17"},
+                                   {"country": "United Kingdom","PurchasingPower2013": "2454.23"},
+                                   {"country": "USA","PurchasingPower2013": "16663.15"}];
+
+                         purchasingPowerObj.sort(function(a,b)
+                      {
+                        return b.PurchasingPower2013- a.PurchasingPower2013;
+                      });
+
+               for (var i = 0; i < purchasingPowerObj.length; i++)
+           {
+               tableRow(purchasingPowerObj[i]);
+           }
+           // For Drawing the Graph
+           $(document).ready(function()
+           {
+                purchasingPowerGraph(purchasingPowerObj);
+           });
+
+         // For Drawing the Table
+           function tableRow(rowData)
+           {
+           var row = $("<tr></tr>").appendTo(table);
+           $("<td id='index'>" + (i+1) + "</td>").appendTo(row);
+           $("<td></td>").text(rowData.country).appendTo(row);
+           $("<td></td>").text(rowData.PurchasingPower2013).appendTo(row);
+
+           //Adding Delete button in each row
+           var column=$("<button class=btnDelete>Delete</button>").appendTo(row);
+         }
+           // Delete button functionality
+           $(document).ready(function(){
+                 $("button").click(function(){
+                var deleteButton=confirm("Are you sure to delete?");if(deleteButton==true)
+              {
+                    var dis=$(this).closest('tr').children('td#index').text();
+                    purchasingPowerObj[parseInt(dis)-1]="";
+                    purchasingPowerGraph(purchasingPowerObj);
+                    $(this).closest('tr').remove();
+                    return false;
+                }
+            });
+            });
+</script>
+<div id="purchasingpower">
+<script type="text/javascript">
+// Graph
+  // set the dimensions of SVG
+  function purchasingPowerGraph(myObj)
+    {
+            // Emptying the Div each time
+              $('div#purchasingpower').empty();
+          // Setting the margin for SVG
+          var margin={ top:20, right:10, bottom: 100, left:40},
+          	width=700 - margin.right-margin.left,
+          	height=500- margin.top-margin.bottom;
+
+
+          //define svg
+
+          var svg_pp=d3.select('div#purchasingpower')
+          		.append('svg')
+          		.attr({
+
+          		"width": width + margin.right + margin.left,
+          		"height": height + margin.top + margin.bottom
+
+          		})
+
+          		.append('g')
+          			.attr("transform", "translate(" + margin.left + ',' + margin.right + ')');
+
+
+          //Scale and Axis
+
+          var xScale=d3.scale.ordinal()
+          .rangeRoundBands([0,width], 0.1);
+
+          var yScale=d3.scale.linear()
+          .range([height, 0]);
+
+          //define axis
+
+          var xAxis=d3.svg.axis()
+          	.scale(xScale)
+          	.orient("bottom");
+
+          var yAxis=d3.svg.axis()
+          	.scale(yScale)
+          	.orient("left");
+
+          //Getting JSON data
+          	purchasingPowerObj.forEach(function(d){
+          		d.PurchasingPower2013=+ d.PurchasingPower2013;
+          		d.country=d.country;
+
+          	});
+
+
+
+          // specify the domains of x and y scales
+
+          xScale.domain(purchasingPowerObj.map(function(d){
+
+          	return d.country;
+          }));
+
+          yScale.domain([0, d3.max(purchasingPowerObj, function(d){
+          	return d.PurchasingPower2013;
+
+          })]);
+
+          //draw the bars
+
+          svg_pp.selectAll('rect')
+          	.data(purchasingPowerObj)
+          	.enter()
+          	.append('rect')
+          	.attr("height", 0)
+          	.attr("y", height)
+          	.transition().duration(3000)
+          	.delay(function(d,i){
+          		return i*200;
+          	})
+          	.attr({
+
+          		'x': function(d){
+          		return xScale(d.country);
+          		},
+
+          		'y': function(d){
+
+          		return yScale(d.PurchasingPower2013);
+          		},
+          		"width": xScale.rangeBand(),
+          		"height": function(d){
+
+          		return height-yScale(d.PurchasingPower2013);
+          		}
+
+          	});
+
+          // append x axis and y axis
+
+          svg_pp.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0, " + height + ")")
+              .call(xAxis)
+              .selectAll('text')
+              .attr("transform", "rotate(-60)")
+              .attr("dx","-0.8em")
+              .attr("dy", "-0;.25em")
+              .style("text-anchor","end")
+              .style("font-size", "12px");
+
+          svg_pp.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+              .style("font-size", "12px");
+
+          }
+
+</script>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+</body>
+</html>

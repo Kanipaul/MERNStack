@@ -1,0 +1,166 @@
+body {
+    background-color: white;
+}
+
+.container_12 {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 60px;
+
+}
+
+.grid_4,
+.grid_6,
+.grid_12 {
+  display: inline;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+p{
+  color: #999;
+  width: 350px;
+}
+#one, #two, #three { width: 33.3%; }
+#one, #two { float: left; }
+#three { float: right; clear: none; }
+
+#logo{
+  display: block;
+}
+.clearfix:after {
+    display:block;
+    clear:both;
+}
+
+a{
+  color: #444;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 22px;
+    text-transform: uppercase;
+}
+/*----- Menu Outline -----*/
+.menu-wrap {
+
+    width:100%;
+    box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+    background:seagreen;
+
+}
+
+.menu {
+    width:1000px;
+    margin-top: -98px;
+    float: right;
+}
+
+.menu li {
+    margin:0px;
+    list-style:none;
+    font-family:'Ek Mukta';
+}
+
+.menu a {
+    transition:all linear 0.15s;
+    color:orange;
+}
+
+.menu li:hover > a, .menu .current-item > a {
+    text-decoration:none;
+    color:#be5b70;
+}
+
+.menu .arrow {
+    font-size:11px;
+    line-height:0%;
+}
+
+/*----- Top Level -----*/
+.menu > ul > li {
+    float:left;
+    display:inline-block;
+    position:relative;
+    font-size:19px;
+}
+
+.menu > ul > li > a {
+    padding:10px 40px;
+    display:inline-block;
+    text-shadow:0px 1px 0px rgba(0,0,0,0.4);
+}
+
+.menu > ul > li:hover > a, .menu > ul > .current-item > a {
+    background:blue;
+}
+
+/*----- Bottom Level -----*/
+.menu li:hover .sub-menu {
+    z-index:1;
+    opacity:1;
+}
+
+.sub-menu {
+    width:160%;
+    padding:5px 0px;
+    position:absolute;
+    top:100%;
+    left:0px;
+    z-index:-1;
+    opacity:0;
+    transition:opacity linear 0.15s;
+    box-shadow:0px 2px 3px rgba(0,0,0,0.2);
+    background:#2e2728;
+}
+
+.sub-menu li {
+    display:block;
+    font-size:16px;
+}
+
+.sub-menu li a {
+    padding:10px 30px;
+    display:block;
+}
+
+.sub-menu li a:hover, .sub-menu .current-item a {
+    background:#3e3436;
+}
+
+.footer_box{
+    float: left;
+    margin-top:500px;
+    height:30px;
+}
+.footer_box ul{
+  float:left;
+  padding:0;
+  margin:0;
+}
+.footer_box li{
+  float:left;
+  list-style:none;
+  margin-left:5px;
+}
+.social_icons{
+  margin-top: 30px;
+}
+
+.facebook{
+    background-image: url("facebook.jpeg");
+}
+.twitter{
+    background-image: url("twitter.jpeg");
+}
+.google{
+  background-image: url("google.jpeg");
+}
+.social_icon {
+    background-repeat: no-repeat;
+    display: block;
+    height: 29px;
+    transition: background-position 0.3s ease 0s;
+    width: 45px;
+  }

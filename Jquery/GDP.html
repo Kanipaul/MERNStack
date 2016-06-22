@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>GDP of G20 countries in 2013</title>
+<link href="css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div>
+    <center><h1> GDP of G20 countries in 2013 </h1><center>
+  </div>
+
+  <div id="TableArea">
+   </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+      <script type="text/javascript">
+          $("#TableArea").html("");
+
+           //Create table html tag
+           var table = $("<table id=DynamicTable border=1></table>").appendTo("#TableArea");
+
+           //Create table header row
+           var rowHeader = $("<tr></tr>").appendTo(table);
+           $("<td></td>").text("S.No").appendTo(rowHeader);
+           $("<td></td>").text("Country").appendTo(rowHeader);
+           $("<td></td").text("GDP").appendTo(rowHeader);
+           $("<td></td").text("Delete").appendTo(rowHeader);
+
+           var gdpObj=[{"country": "Argentina","GDP2013": "622.05"},
+           {"country": "Australia","GDP2013": "1497.22"},
+           {"country": "Brazil","GDP2013": "2391.03"},
+           {"country": "Canada","GDP2013": "1838.96"},
+           {"country": "China","GDP2013": "9490.85"},
+           {"country": "France","GDP2013": "2811.13"},
+           {"country": "Germany","GDP2013": "3746.49"},
+           {"country": "India","GDP2013": "1875.16"},
+           {"country": "Indonesia","GDP2013": "912.5"},
+           {"country": "Italy","GDP2013": "2137.62"},
+           {"country": "Japan","GDP2013": "4919.59"},
+           {"country": "Mexico","GDP2013": "1261.86"},
+           {"country": "Russia","GDP2013": "2079.02"},
+           {"country": "Saudi Arabia","GDP2013": "744.34"},
+           {"country": "South Africa","GDP2013": "366.24"},
+           {"country": "Republic of Korea","GDP2013": "1305.61"},
+           {"country": "Turkey","GDP2013": "823.03"},
+           {"country": "United Kingdom","GDP2013": "2678.38"},
+           {"country": "USA","GDP2013": "16663.15"}];
+           gdpObj.sort(function(a,b)
+             {
+                return b.GDP2013- a.GDP2013;
+             });
+
+           for (var i = 0; i < gdpObj.length; i++)
+           {
+               tableRow(gdpObj[i]);
+           }
+           // Drawing the Graph
+           $(document).ready(function()
+           {
+                gdpGraph(gdpObj);
+           });
+
+         // For Drawing the Table
+           function tableRow(rowData)
+           {
+           var row = $("<tr></tr>").appendTo(table);
+           $("<td id='index'>" + (i+1) + "</td>").appendTo(row);
+           $("<td></td>").text(rowData.country).appendTo(row);
+           $("<td></td>").text(rowData.GDP2013).appendTo(row);
+
+           //Adding Delete button in each row
+           var column=$("<button class=btnDelete>Delete</button>").appendTo(row);
+         }
+           // Delete button functionality
+           $(document).ready(function(){
+                 $("button").click(function(){
+                var deleteButton=confirm("Are you sure to delete?");if(deleteButton==true)
+              {
+                    var dis=$(this).closest('tr').children('td#index').text();
+                    gdpObj[parseInt(dis)-1]="";
+                    gdpGraph(gdpObj);
+                    $(this).closest('tr').remove();
+                    return false;
+                }
+            });
+            });
+</script>
+<div id="gdp">
+<script type="text/javascript">
+// Graph
+  // set the dimensions of SVG
+  function gdpGraph(myObj)
+    {
+            // Emptying the Div each time
+              $('div#gdp').empty();
+          // Setting the margin for SVG
+          var margin={ top:20, right:10, bottom: 100, left:40},
+          	width=700 - margin.right-margin.left,
+          	height=500- margin.top-margin.bottom;
+
+
+          //define svg
+
+          var svg_gdp=d3.select('div#gdp')
+          		.append('svg')
+          		.attr({
+
+          		"width": width + margin.right + margin.left,
+          		"height": height + margin.top + margin.bottom
+
+          		})
+
+          		.append('g')
+          			.attr("transform", "translate(" + margin.left + ',' + margin.right + ')');
+
+
+          //Scale and Axis
+
+          var xScale=d3.scale.ordinal()
+          .rangeRoundBands([0,width], 0.1);
+
+          var yScale=d3.scale.linear()
+          .range([height, 0]);
+
+          //define axis
+
+          var xAxis=d3.svg.axis()
+          	.scale(xScale)
+          	.orient("bottom");
+
+          var yAxis=d3.svg.axis()
+          	.scale(yScale)
+          	.orient("left");
+
+          //Getting JSON data
+          	gdpObj.forEach(function(d){
+          		d.GDP2013=+ d.GDP2013;
+          		d.country=d.country;
+
+          	});
+
+
+
+          // specify the domains of x and y scales
+
+          xScale.domain(gdpObj.map(function(d){
+
+          	return d.country;
+          }));
+
+          yScale.domain([0, d3.max(gdpObj, function(d){
+          	return d.GDP2013;
+
+          })]);
+
+          //draw the bars
+
+          svg_gdp.selectAll('rect')
+          	.data(gdpObj)
+          	.enter()
+          	.append('rect')
+          	.attr("height", 0)
+          	.attr("y", height)
+          	.transition().duration(3000)
+          	.delay(function(d,i){
+          		return i*200;
+          	})
+          	.attr({
+
+          		'x': function(d){
+          		return xScale(d.country);
+          		},
+
+          		'y': function(d){
+
+          		return yScale(d.GDP2013);
+          		},
+          		"width": xScale.rangeBand(),
+          		"height": function(d){
+
+          		return height-yScale(d.GDP2013);
+          		}
+
+          	});
+
+          // append x axis and y axis
+
+          svg_gdp.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0, " + height + ")")
+              .call(xAxis)
+              .selectAll('text')
+              .attr("transform", "rotate(-60)")
+              .attr("dx","-0.8em")
+              .attr("dy", "-0;.25em")
+              .style("text-anchor","end")
+              .style("font-size", "12px");
+
+          svg_gdp.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+              .style("font-size", "12px");
+
+          }
+
+</script>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+</body>
+</html>

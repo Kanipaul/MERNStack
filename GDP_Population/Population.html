@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Population of G20 countries in 2013</title>
+<link href="css/style.css" rel="stylesheet" />
+<script src="http://d3js.org/d3.v3.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <center><h1> Population of G20 countries in 2013 </h1><center>
+  </div>
+
+  <div id="TableArea">
+   </div>
+
+   <script type="text/javascript" src="js/jquery.js"></script>
+
+      <script type="text/javascript">
+          $("#TableArea").html("");
+
+           //Create table html tag
+           var table = $("<table id=DynamicTable border=1></table>").appendTo("#TableArea");
+
+           //Create table header row
+           var rowHeader = $("<tr></tr>").appendTo(table);
+           $("<td></td>").text("S.No").appendTo(rowHeader);
+           $("<td></td>").text("Country").appendTo(rowHeader);
+           $("<td></td").text("Population").appendTo(rowHeader);
+           $("<td></td").text("Delete").appendTo(rowHeader);
+
+
+           var populationObj=[{"country": "Argentina","population2013": "42.2"},
+                      {"country": "Australia","population2013": "23.3"},
+                      {"country": "Brazil","population2013": "201.03"},
+                      {"country": "Canada","population2013": "35.11"  },
+                      {"country": "China","population2013": "1360.72"},
+                      {"country": "France","population2013": "63.65"},
+                      {"country": "Germany","population2013": "80.77"},
+                      {"country": "India","population2013": "1259.35"},
+                      {"country": "Indonesia","population2013": "248.82"},
+                      {"country": "Italy","population2013": "59.69"},
+                      {"country": "Japan","population2013": "127.34"},
+                      {"country": "Mexico","population2013": "118.4"},
+                      {"country": "Russia","population2013": "143.7"},
+                      {"country": "Saudi Arabia","population2013": "29.99"},
+                      {"country": "South Africa","population2013": "53.16"},
+                      {"country": "Republic of Korea","population2013": "50.22"},
+                      {"country": "Turkey","population2013": "76.06"},
+                      {"country": "United Kingdom","population2013": "64.09"},
+                      {"country": "USA","population2013": "316.74"}];
+
+                      populationObj.sort(function(a,b)
+                      {
+                        return b.population2013- a.population2013;
+                      });
+
+          for (var i = 0; i < populationObj.length; i++)
+           {
+               tableRow(populationObj[i]);
+           }
+
+           //Drawing the graph
+           $(document).ready(function()
+           {
+                populationGraph(populationObj);
+           });
+           //Create new row for each record
+           function tableRow(rowData)
+           {
+           var row = $("<tr></tr>").appendTo(table);
+           $("<td id='index'>" + (i+1) + "</td>").appendTo(row);
+           $("<td></td>").text(rowData.country).appendTo(row);
+           $("<td></td>").text(rowData.population2013).appendTo(row);
+
+           //Adding Delete button in each row
+           var column=$("<button class=btnDelete>Delete</button>").appendTo(row);
+         }
+           // Delete button functionality
+           $(document).ready(function(){
+                 $("button").click(function(){
+                var deleteButton=confirm("Are you sure to delete?");if(deleteButton==true)
+              {
+                    var dis=$(this).closest('tr').children('td#index').text();
+                    populationObj[parseInt(dis)-1]="";
+                    populationGraph(populationObj);
+                    $(this).closest('tr').remove();
+                    return false;
+                }
+            });
+            });
+</script>
+<div id="population">
+<script type="text/javascript">
+// Graph
+  // set the dimensions of SVG
+  function populationGraph(myObj)
+    {
+            // Emptying the Div each time
+              $('div#population').empty();
+          // Setting the margin for SVG
+          var margin={ top:20, right:10, bottom: 100, left:40},
+          	width=700 - margin.right-margin.left,
+          	height=500- margin.top-margin.bottom;
+
+
+          //define svg
+
+          var svg_population=d3.select('div#population')
+          		.append('svg')
+          		.attr({
+
+          		"width": width + margin.right + margin.left,
+          		"height": height + margin.top + margin.bottom
+
+          		})
+
+          		.append('g')
+          			.attr("transform", "translate(" + margin.left + ',' + margin.right + ')');
+
+
+          //Scale and Axis
+
+          var xScale=d3.scale.ordinal()
+          .rangeRoundBands([0,width], 0.1);
+
+          var yScale=d3.scale.linear()
+          .range([height, 0]);
+
+          //define axis
+
+          var xAxis=d3.svg.axis()
+          	.scale(xScale)
+          	.orient("bottom");
+
+          var yAxis=d3.svg.axis()
+          	.scale(yScale)
+          	.orient("left");
+
+          //Getting JSON data
+          	populationObj.forEach(function(d){
+          		d.population2013=+ d.population2013;
+          		d.country=d.country;
+
+          	});
+
+
+
+          // specify the domains of x and y scales
+
+          xScale.domain(populationObj.map(function(d){
+
+          	return d.country;
+          }));
+
+          yScale.domain([0, d3.max(populationObj, function(d){
+          	return d.population2013;
+
+          })]);
+
+          //draw the bars
+
+          svg_population.selectAll('rect')
+          	.data(populationObj)
+          	.enter()
+          	.append('rect')
+          	.attr("height", 0)
+          	.attr("y", height)
+          	.transition().duration(3000)
+          	.delay(function(d,i){
+          		return i*200;
+          	})
+          	.attr({
+
+          		'x': function(d){
+          		return xScale(d.country);
+          		},
+
+          		'y': function(d){
+
+          		return yScale(d.population2013);
+          		},
+          		"width": xScale.rangeBand(),
+          		"height": function(d){
+
+          		return height-yScale(d.population2013);
+          		}
+
+          	});
+
+          // append x axis and y axis
+
+          svg_population.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0, " + height + ")")
+              .call(xAxis)
+              .selectAll('text')
+              .attr("transform", "rotate(-60)")
+              .attr("dx","-0.8em")
+              .attr("dy", "-0;.25em")
+              .style("text-anchor","end")
+              .style("font-size", "12px");
+
+          svg_population.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+              .style("font-size", "12px");
+
+          }
+
+</script>
+</div>
+
+
+</body>
+</html>
